@@ -20,7 +20,7 @@ jobs:
         steps:
         - name: Checkout repository
           uses: actions/checkout@v4
-          
+
         - name: Create artifact
           uses: actions/upload-artifact@v4
           with:
@@ -33,6 +33,11 @@ jobs:
         name: Deploy
         runs-on: ubuntu-latest
         needs: create-artifact
+        env:
+            TEST: ${{ vars.STAGING_VAR }}
+        environment:
+            name: staging
+            url: https://www.google.com
         steps:
             - name: download artifact
               uses: actions/download-artifact@v4
