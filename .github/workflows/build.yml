@@ -11,7 +11,10 @@ name: Build.
 on:
   push:
     branches: [ "development" ] 
-
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
     create-artifact:
