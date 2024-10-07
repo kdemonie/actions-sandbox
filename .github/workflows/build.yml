@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RELEASE_CYCLE: "24MR3"
+  RELEASE_CYCLE: "25MR1"
 
 jobs:
     create-artifact:
