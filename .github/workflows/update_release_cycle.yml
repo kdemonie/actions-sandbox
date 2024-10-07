@@ -6,7 +6,7 @@ on:
       release_cycle:
         description: 'Enter the release cycle'
         required: true
-        default: '24MR4'
+        default: '24MR3'
 
 jobs:
   check-branch:
