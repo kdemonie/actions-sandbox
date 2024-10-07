@@ -1,0 +1,51 @@
+name: Prompt Release Cycle
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_cycle:
+        description: 'Enter the release cycle'
+        required: true
+        default: '25MR1'
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if branch is development
+        id: check_branch
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/development" ]; then
+            echo "This workflow can only be run on the development branch."
+            exit 1
+          fi
+
+  update-release-cycle:
+    needs: check-branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with: 
+          token: ${{ secrets.GH_WF_TOKEN }}
+
+      - name: Update release cycle in build-deploy workflow
+        run: |
+          RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
+          sed -i "s/RELEASE_CYCLE: \".*\"/RELEASE_CYCLE: \"$RELEASE_CYCLE\"/" .github/workflows/build.yml
+
+      - name: Update default value in prompt-release-cycle workflow
+        run: |
+          RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
+          sed -i "9s/\(default: '\).*\('.*\)/\1$RELEASE_CYCLE\2/" .github/workflows/update_release_cycle.yml
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GH_WF_TOKEN }}
+          branch: release/update-to-cycle--${{ github.event.inputs.release_cycle }}
+          base: development
+          commit-message: "chore(release): Update release cycle to ${{ github.event.inputs.release_cycle }} [skip-ci]"
+          title: "Update release cycle to ${{ github.event.inputs.release_cycle }}"
+          body: "This PR updates the release cycle to ${{ github.event.inputs.release_cycle }}."
+          labels: "New-release"
