@@ -27,7 +27,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with: 
-          github_token: ${{ secrets.GH_WF_TOKEN }}
+          token: ${{ secrets.GH_WF_TOKEN }}
 
       - name: Update release cycle in build-deploy workflow
         run: |
