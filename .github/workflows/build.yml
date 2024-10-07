@@ -16,6 +16,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  RELEASE_CYCLE: "24MR3"
+
 jobs:
     create-artifact:
         name: Creates the artifact
