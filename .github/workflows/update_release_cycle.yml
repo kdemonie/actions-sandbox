@@ -52,5 +52,6 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           branch: release/update-to-cycle--${{ github.event.inputs.release_cycle }}
+          base: development
           title: "Update release cycle to ${{ github.event.inputs.release_cycle }}"
           body: "This PR updates the release cycle to ${{ github.event.inputs.release_cycle }}."
