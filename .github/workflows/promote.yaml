@@ -1,35 +1,36 @@
-name: Update Release Cycle
+name: Create Pull Request from Development to Staging
+
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
     branches:
-      - development
+      - 'development'
 
 jobs:
-  check-merged:
+  create_pull_request:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    steps:
-      - name: Check if PR was merged
-        id: check_merge
-        if: github.event.pull_request.merged == true
-        run: |
-          echo "Pull-request was merged, action will run..."
-  update-release-cycle:
-    needs: check-merged
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with: 
-          token: ${{ secrets.GH_WF_TOKEN }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GH_WF_TOKEN }}
-          branch: release/development-to-staging
-          base: staging
-          title: "Development --> Staging"
-          labels: "Promote,Staging"
-          draft: "always-true"
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Check if PR exists from development to staging
+      id: check_pr
+      run: |
+        gh pr list --base staging --head development --json number --jq '..number' > pr_number.txt
+        if [ -s pr_number.txt ]; then
+          echo "PR_EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "PR_EXISTS=false" >> $GITHUB_ENV
+        fi
+
+    - name: Create Pull Request
+      if: env.PR_EXISTS == 'false'
+      run: |
+        gh pr create --base staging --head development --title "Merge development into staging" --body "Automated PR to merge development into staging"
