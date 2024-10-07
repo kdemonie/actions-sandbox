@@ -28,12 +28,11 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       run: |
         pr_list=$(gh pr list --base staging --head development --json number)
-        echo $pr_list
-        if [ "$pr_list" == "[]" ]; then
-          echo "PR_EXISTS=false" >> $GITHUB_ENV
-        else
-          pr_number=$(echo "$pr_list" | jq '..number')
+        echo "PR list: $pr_list"
+        if echo "$pr_list" | grep -q '"number":'; then
           echo "PR_EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "PR_EXISTS=false" >> $GITHUB_ENV
         fi
     - name: Create Pull Request
       env:
