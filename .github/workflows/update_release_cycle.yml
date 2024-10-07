@@ -39,19 +39,12 @@ jobs:
           RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
           sed -i "s/\(default: '\).*\('.*\)/\1$RELEASE_CYCLE\2/" .github/workflows/update_release_cycle.yml
 
-      - name: Commit changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b release/update-to-cycle--${{ github.event.inputs.release_cycle }}
-          git add .github/workflows/build.yml .github/workflows/update_release_cycle.yml
-          git commit -m "chore(release): Update release cycle to $RELEASE_CYCLE [skip-ci]"
-          git push origin release/update-to-cycle--${{ github.event.inputs.release_cycle }}
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           branch: release/update-to-cycle--${{ github.event.inputs.release_cycle }}
           base: development
+          commit-message: "chore(release): Update release cycle to $RELEASE_CYCLE [skip-ci]"
           title: "Update release cycle to ${{ github.event.inputs.release_cycle }}"
           body: "This PR updates the release cycle to ${{ github.event.inputs.release_cycle }}."
+          labels: "New-release"
