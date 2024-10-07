@@ -1,0 +1,49 @@
+name: Create Pull Request from Development to Staging
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'development'
+      - 'staging'
+
+jobs:
+  create_pull_request:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GH_WF_TOKEN }}
+
+    - name: Setup Git
+      run: |
+        echo ${{ github.base_ref }}
+        if ${{ github.base_ref }} == 'development" then
+          echo "TARGET_BRANCH=staging" >> $GITHUB_ENV
+        else
+          echo "TARGET_BRANCH=main" >> $GITHUB_ENV
+        fi
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Check if PR exists from development to staging
+      id: check_pr
+      env:
+        GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
+      run: |
+        pr_list=$(gh pr list --base $TARGET_BRANCH --head ${{ github.base_ref }} --json number)
+        echo "PR list: $pr_list"
+        if echo "$pr_list" | grep -q '"number":'; then
+          echo "PR_EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "PR_EXISTS=false" >> $GITHUB_ENV
+        fi
+    - name: Create Pull Request
+      env:
+        GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
+      if: env.PR_EXISTS == 'false'
+      run: |
+        gh pr create --base $TARGET_BRANCH --head ${{ github.base_ref }} --title "Merge ${{ github.base_ref }} into $TARGET_BRANCH" --body "Automated PR to merge ${{ github.base_ref }} into $TARGET_BRANCH"
