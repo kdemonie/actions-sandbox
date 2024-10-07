@@ -45,7 +45,7 @@ jobs:
           token: ${{ secrets.GH_WF_TOKEN }}
           branch: release/update-to-cycle--${{ github.event.inputs.release_cycle }}
           base: development
-          commit-message: "chore(release): Update release cycle to $RELEASE_CYCLE [skip-ci]"
+          commit-message: "chore(release): Update release cycle to ${{ github.event.inputs.release_cycle }} [skip-ci]"
           title: "Update release cycle to ${{ github.event.inputs.release_cycle }}"
           body: "This PR updates the release cycle to ${{ github.event.inputs.release_cycle }}."
           labels: "New-release"
