@@ -46,4 +46,4 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       if: env.PR_EXISTS == 'false'
       run: |
-        gh pr create --base $TARGET_BRANCH --head ${{ github.base_ref }} --title "Merge ${{ github.base_ref }} into $TARGET_BRANCH" --body "Automated PR to merge ${{ github.base_ref }} into $TARGET_BRANCH"
+        gh pr create --draft --label "Promoto,$TARGET_BRANCH" --base $TARGET_BRANCH --head ${{ github.base_ref }} --title "Merge ${{ github.base_ref }} into $TARGET_BRANCH" --body "Automated PR to merge ${{ github.base_ref }} into $TARGET_BRANCH"
