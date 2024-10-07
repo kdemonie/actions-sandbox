@@ -27,14 +27,16 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       run: |
-        gh pr list --base staging --head development --json number --jq '..number' > pr_number.txt
-        if [ -s pr_number.txt ]; then
+        pr_number=$(gh pr list --base staging --head development --json number --jq '..number')
+        if [ -n "$pr_number" ]; then
           echo "PR_EXISTS=true" >> $GITHUB_ENV
         else
           echo "PR_EXISTS=false" >> $GITHUB_ENV
         fi
 
     - name: Create Pull Request
+      env:
+        GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       if: env.PR_EXISTS == 'false'
       run: |
         gh pr create --base staging --head development --title "Merge development into staging" --body "Automated PR to merge development into staging"
