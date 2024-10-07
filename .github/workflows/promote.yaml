@@ -24,6 +24,8 @@ jobs:
 
     - name: Check if PR exists from development to staging
       id: check_pr
+      env:
+        GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       run: |
         gh pr list --base staging --head development --json number --jq '..number' > pr_number.txt
         if [ -s pr_number.txt ]; then
