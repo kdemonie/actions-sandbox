@@ -37,7 +37,7 @@ jobs:
       - name: Update default value in prompt-release-cycle workflow
         run: |
           RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
-          sed -i "s/default: '.*'/default: '$RELEASE_CYCLE'/" .github/workflows/update_release_cycle.yml
+          sed -i "s/\(default: '\).*\('.*\)/\1$RELEASE_CYCLE\2/" .github/workflows/prompt-release-cycle.yml
 
       - name: Commit changes
         run: |
