@@ -30,7 +30,7 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -b release/update-to-cycle--${{ github.event.inputs.release_cycle }}
-          git add .github/workflows/build-deploy.yml .github/workflows/prompt-release-cycle.yml
+          git add .github/workflows/build.yml .github/workflows/update_release_cycle.yml
           git commit -m "chore(release): Update release cycle to $RELEASE_CYCLE [skip-ci]"
           git push origin release/update-to-cycle--${{ github.event.inputs.release_cycle }}
 
