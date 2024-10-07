@@ -21,7 +21,7 @@ jobs:
     - name: Setup Git
       run: |
         echo ${{ github.base_ref }}
-        if ${{ github.base_ref }} == 'development'; then
+        if [ "${{ github.base_ref }}" = "development" ]; then
           echo "TARGET_BRANCH=staging" >> $GITHUB_ENV
         else
           echo "TARGET_BRANCH=main" >> $GITHUB_ENV
