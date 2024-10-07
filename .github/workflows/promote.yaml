@@ -27,13 +27,13 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       run: |
-        pr_number=$(gh pr list --base staging --head development --json number --jq '. | .number')
-        if [ -n "$pr_number" ]; then
-          echo "PR_EXISTS=true" >> $GITHUB_ENV
-        else
+        pr_list=$(gh pr list --base staging --head development --json number)
+        if [ "$pr_list" == "[]" ]; then
           echo "PR_EXISTS=false" >> $GITHUB_ENV
+        else
+          pr_number=$(echo "$pr_list" | jq '..number')
+          echo "PR_EXISTS=true" >> $GITHUB_ENV
         fi
-
     - name: Create Pull Request
       env:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
