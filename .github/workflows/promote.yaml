@@ -28,6 +28,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
       run: |
         pr_list=$(gh pr list --base staging --head development --json number)
+        echo $pr_list
         if [ "$pr_list" == "[]" ]; then
           echo "PR_EXISTS=false" >> $GITHUB_ENV
         else
