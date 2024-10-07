@@ -1,0 +1,42 @@
+name: Prompt Release Cycle
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_cycle:
+        description: 'Enter the release cycle'
+        required: true
+        default: '24MR4'
+
+jobs:
+  update-release-cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update release cycle in build-deploy workflow
+        run: |
+          RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
+          sed -i "s/RELEASE_CYCLE: \".*\"/RELEASE_CYCLE: \"$RELEASE_CYCLE\"/" .github/workflows/build.yml
+
+      - name: Update default value in prompt-release-cycle workflow
+        run: |
+          RELEASE_CYCLE=${{ github.event.inputs.release_cycle }}
+          sed -i "s/default: '.*'/default: '$RELEASE_CYCLE'/" .github/workflows/update_release_cycle.yml
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b release/update-to-cycle--${{ github.event.inputs.release_cycle }}
+          git add .github/workflows/build-deploy.yml .github/workflows/prompt-release-cycle.yml
+          git commit -m "chore(release): Update release cycle to $RELEASE_CYCLE [skip-ci]"
+          git push origin release/update-to-cycle--${{ github.event.inputs.release_cycle }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: release/update-to-cycle--${{ github.event.inputs.release_cycle }}
+          title: "Update release cycle to ${{ github.event.inputs.release_cycle }}"
+          body: "This PR updates the release cycle to ${{ github.event.inputs.release_cycle }}."
