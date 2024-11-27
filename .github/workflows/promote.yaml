@@ -5,7 +5,8 @@ on:
     types: [closed]
     branches:
       - 'development'
-      - 'staging'
+      - 'ictTest'
+      - 'qa'
 
 jobs:
   create_pull_request:
@@ -21,11 +22,13 @@ jobs:
     - name: Setup Git
       run: |
         echo ${{ github.base_ref }}
-        if [ "${{ github.base_ref }}" = "development" ]; then
-          echo "TARGET_BRANCH=staging" >> $GITHUB_ENV
-        else
-          echo "TARGET_BRANCH=main" >> $GITHUB_ENV
-        fi
+          if [ "${{ github.base_ref }}" = "development" ]; then
+            echo "TARGET_BRANCH=ictTest" >> $GITHUB_ENV
+          elif [ "${{ github.base_ref }}" = "ictTest" ]; then
+            echo "TARGET_BRANCH=qa" >> $GITHUB_ENV
+          elif [ "${{ github.base_ref }}" = "qa" ]; then
+            echo "TARGET_BRANCH=main" >> $GITHUB_ENV
+          fi
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
