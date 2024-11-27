@@ -1,0 +1,11 @@
+name: "Some workflow"
+on: [workflow_dispatch]
+
+jobs:
+  deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: deploy
+              run: |
+                 echo "Done;" 
