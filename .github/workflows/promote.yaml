@@ -32,7 +32,7 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-    - name: Check if PR exists from development to staging
+    - name: Check if PR exists from head to base branch
       id: check_pr
       env:
         GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
@@ -43,6 +43,15 @@ jobs:
           echo "PR_EXISTS=true" >> $GITHUB_ENV
         else
           echo "PR_EXISTS=false" >> $GITHUB_ENV
+        fi
+    - name: Create Label
+      env:
+        GH_TOKEN: ${{ secrets.GH_WF_TOKEN }}
+      if: env.PR_EXISTS == 'false'
+      run: |
+        label_exists=$(gh label list --json "name" --jq '.[] | select(.name == "New-release")')
+        if [ -z "$label_exists" ] ; then
+           gh label create "New-release" --description "Label for new releases" --color "00ff00"
         fi
     - name: Create Pull Request
       env:
